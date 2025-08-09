@@ -34,7 +34,6 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/mood', require('./routes/mood'));
 app.use('/api/recommendations', require('./routes/recommendations'));
-app.use('/api/summaries', require('./routes/summaries'));
 app.use('/api/journal', require('./routes/journal'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/community', require('./routes/community'));

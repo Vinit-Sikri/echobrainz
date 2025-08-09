@@ -1,16 +1,15 @@
-
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { PlantGrowthTracker } from "@/components/PlantGrowthTracker";
 import { RecommendationCards } from "@/components/RecommendationCards";
 import { MoodChart } from "@/components/MoodChart";
 import { Button } from "@/components/ui/button";
-import { WeeklySummary } from "@/components/WeeklySummary";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Mic, Calendar, ArrowRight, Coins } from "lucide-react";
+// 'Coins' icon hata diya gaya hai
+import { Mic, Calendar, ArrowRight } from "lucide-react"; 
 
 interface DashboardStats {
   streakCount: number;
@@ -18,7 +17,7 @@ interface DashboardStats {
   lastCheckIn: string | null;
   currentMood: string | null;
   completedJournals: number;
-  tokenBalance?: number;
+  // tokenBalance yahan se hata diya gaya hai
 }
 
 const DashboardPage = () => {
@@ -28,7 +27,7 @@ const DashboardPage = () => {
     lastCheckIn: null,
     currentMood: null,
     completedJournals: 0,
-    tokenBalance: 0
+    // tokenBalance yahan se hata diya gaya hai
   });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -121,24 +120,7 @@ const DashboardPage = () => {
               </div>
             </div>
             
-            <div className="bg-wellness-yellow/10 rounded-lg p-5 flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-wellness-yellow-dark">Token Balance</h3>
-                <p className="text-3xl font-bold mt-2 flex items-center">
-                  {stats.tokenBalance || 0}
-                  <Coins className="ml-2 h-5 w-5 text-wellness-yellow" />
-                </p>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => navigate('/rewards')}
-                className="mt-2 self-start"
-              >
-                <Coins className="mr-2 h-4 w-4" />
-                View Rewards
-              </Button>
-            </div>
+            {/* Token Balance Wala Card Yahan Se Hata Diya Gaya Hai */}
             
             <div className="bg-wellness-teal/10 rounded-lg p-5 flex flex-col justify-between mr-4">
               <div>
@@ -186,13 +168,6 @@ const DashboardPage = () => {
             <h2 className="text-xl font-semibold text-gray-800">Personalized Recommendations</h2>
           </div>
           <RecommendationCards />
-        </section>
-
-        {/* Weekly Summary */}
-        <section className="ml-4 mr-4"> 
-          <div className="mt-8">
-            <WeeklySummary />
-          </div>
         </section>
       </div>
     </DashboardLayout>

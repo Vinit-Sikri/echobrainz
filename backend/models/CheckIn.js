@@ -9,7 +9,6 @@ const CheckInSchema = new mongoose.Schema({
   },
   mood: {
     type: String,
-    required: true
   },
   moodScore: {
     type: Number,
@@ -25,14 +24,12 @@ const CheckInSchema = new mongoose.Schema({
   },
   emotionalState: {
     type: String,
-    required: true
   },
   detectedEmotions: [{
     type: String
   }],
   sentimentScore: {
     type: Number,
-    required: true
   },
   method: {
     type: String,

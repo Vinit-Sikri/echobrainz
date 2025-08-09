@@ -1,10 +1,9 @@
-
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Community = require('../models/Community');
 const User = require('../models/User');
-const Token = require('../models/Token');
+// const Token = require('../models/Token'); // Removed
 
 // @route   GET api/community
 // @desc    Get all community groups
@@ -46,7 +45,6 @@ router.get('/:id', auth, async (req, res) => {
 // @desc    Create a new community group
 // @access  Private
 router.post('/', auth, async (req, res) => {
- // console.log("Sending group data:", newGroup);
   try {
     const { name, description, category } = req.body;
     
@@ -54,7 +52,6 @@ router.post('/', auth, async (req, res) => {
       return res.status(400).json({ message: 'Please provide all required fields' });
     }
     
-    // Create new group
     const newGroup = new Community({
       name,
       description,
@@ -64,33 +61,12 @@ router.post('/', auth, async (req, res) => {
     
     const group = await newGroup.save();
     
-    // Populate the created group with user details
     const populatedGroup = await Community.findById(group._id)
       .populate('members', 'name profilePicture');
     
-    // Award tokens for creating a new group
-    const user = await User.findById(req.user.id);
-    
-    if (user && user.tokens) {
-      const tokensToAward = 15;
-      user.tokens.balance += tokensToAward;
-      user.tokens.lifetime += tokensToAward;
-      user.tokens.lastUpdated = new Date();
-      await user.save();
-      
-      // Record token transaction
-      const newToken = new Token({
-        user: req.user.id,
-        amount: tokensToAward,
-        type: 'earned',
-        source: 'community',
-        description: 'Created a new community group'
-      });
-      
-      await newToken.save();
-    }
-    
-    res.json(populatedGroup);
+    // --- Token awarding logic removed ---
+
+    res.status(201).json(populatedGroup);
   } catch (err) {
     console.error('Error creating community group:', err);
     res.status(500).json({ message: 'Error creating community group' });
@@ -108,16 +84,13 @@ router.post('/:id/join', auth, async (req, res) => {
       return res.status(404).json({ message: 'Group not found' });
     }
     
-    // Check if user is already a member
     if (group.members.includes(req.user.id)) {
       return res.status(400).json({ message: 'Already a member of this group' });
     }
     
-    // Add user to members
     group.members.push(req.user.id);
     await group.save();
     
-    // Populate the updated group
     const populatedGroup = await Community.findById(group._id)
       .populate('members', 'name profilePicture')
       .populate('messages.user', 'name profilePicture');
@@ -140,19 +113,16 @@ router.post('/:id/leave', auth, async (req, res) => {
       return res.status(404).json({ message: 'Group not found' });
     }
     
-    // Check if user is a member
     if (!group.members.includes(req.user.id)) {
       return res.status(400).json({ message: 'Not a member of this group' });
     }
     
-    // Remove user from members
     group.members = group.members.filter(
       member => member.toString() !== req.user.id.toString()
     );
     
     await group.save();
     
-    // Populate the updated group
     const populatedGroup = await Community.findById(group._id)
       .populate('members', 'name profilePicture');
     
@@ -180,12 +150,10 @@ router.post('/:id/message', auth, async (req, res) => {
       return res.status(404).json({ message: 'Group not found' });
     }
     
-    // Check if user is a member
     if (!group.members.some(member => member.toString() === req.user.id.toString())) {
       return res.status(403).json({ message: 'Must be a member to post messages' });
     }
     
-    // Add message
     group.messages.push({
       user: req.user.id,
       content
@@ -193,33 +161,12 @@ router.post('/:id/message', auth, async (req, res) => {
     
     await group.save();
     
-    // Get the newly added message with user info
     const updatedGroup = await Community.findById(req.params.id)
       .populate('messages.user', 'name profilePicture');
     
     const newMessage = updatedGroup.messages[updatedGroup.messages.length - 1];
     
-    // Award tokens for active participation
-    const user = await User.findById(req.user.id);
-    
-    if (user && user.tokens && Math.random() < 0.3) { // 30% chance to earn tokens for messages
-      const tokensToAward = 2;
-      user.tokens.balance += tokensToAward;
-      user.tokens.lifetime += tokensToAward;
-      user.tokens.lastUpdated = new Date();
-      await user.save();
-      
-      // Record token transaction
-      const newToken = new Token({
-        user: req.user.id,
-        amount: tokensToAward,
-        type: 'earned',
-        source: 'community',
-        description: 'Active participation in community'
-      });
-      
-      await newToken.save();
-    }
+    // --- Token awarding logic removed ---
     
     res.json(newMessage);
   } catch (err) {
@@ -255,21 +202,18 @@ router.get('/:id/messages', auth, async (req, res) => {
 // @access  Private/Admin
 router.post('/seed', auth, async (req, res) => {
   try {
-    // Check if user is admin (in production, implement proper admin check)
     const user = await User.findById(req.user.id);
     
     if (!user) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
     
-    // Check if we already have groups
     const existingGroups = await Community.countDocuments();
     
     if (existingGroups > 0) {
       return res.status(400).json({ message: 'Community groups already exist' });
     }
     
-    // Sample groups
     const sampleGroups = [
       {
         name: 'Anxiety Support',
@@ -303,10 +247,8 @@ router.post('/seed', auth, async (req, res) => {
       }
     ];
     
-    // Insert the groups
     await Community.insertMany(sampleGroups);
     
-    // Return the created groups
     const groups = await Community.find()
       .populate('members', 'name profilePicture');
     

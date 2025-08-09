@@ -14,7 +14,6 @@ import JournalPage from "./pages/JournalPage";
 import HistoryPage from "./pages/HistoryPage";
 import CommunityPage from "./pages/CommunityPage";
 import ProfilePage from "./pages/ProfilePage";
-import RewardsPage from "./pages/RewardsPage";
 import GamesPage from "./pages/GamesPage";
 import NotFound from "./pages/NotFound";
 import { Import } from "lucide-react";
@@ -39,7 +38,6 @@ const App = () => (
             <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
             <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/rewards" element={<ProtectedRoute><RewardsPage /></ProtectedRoute>} />
             <Route path="/games" element={<ProtectedRoute><GamesPage /></ProtectedRoute>} />
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace />} />

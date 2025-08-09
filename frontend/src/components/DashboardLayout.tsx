@@ -10,15 +10,13 @@ import {
   Calendar,
   Users,
   UserCircle,
-  Award,
   LogOut,
+  Gamepad2, 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { TokenBalance } from "@/components/TokenBalance";
 import { PlantGrowthTracker } from "@/components/PlantGrowthTracker";
-import { Gamepad2 } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile"; 
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -39,7 +37,6 @@ const DashboardLayout = ({ children, pageTitle }: DashboardLayoutProps) => {
     { name: "History", path: "/history", icon: Calendar },
     { name: "Community", path: "/community", icon: Users },
     { name: "Games", path: "/games", icon: Gamepad2 },
-    { name: "Rewards", path: "/rewards", icon: Award },
     { name: "Profile", path: "/profile", icon: UserCircle },
   ];
 
@@ -177,5 +174,5 @@ const DashboardLayout = ({ children, pageTitle }: DashboardLayoutProps) => {
     </div>
   );
 };
-  {/*Nothing just footer*/}
+
 export default DashboardLayout;

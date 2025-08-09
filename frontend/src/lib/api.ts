@@ -1,7 +1,6 @@
 import axios from "axios";
 import { env } from "./env";
 
-
 export const api = axios.create({
   baseURL: env.API_URL || "http://localhost:5000/api",
   headers: {
@@ -9,28 +8,7 @@ export const api = axios.create({
   },
 });
 
-
-export const aiApi = axios.create({
-  baseURL: "http://localhost:8000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-aiApi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -64,7 +42,6 @@ api.interceptors.response.use(
     
     const { response } = error;
     
-    
     if (response && response.status === 401) {
       localStorage.removeItem("token");
       
@@ -73,17 +50,6 @@ api.interceptors.response.use(
       }
     }
     
-    return Promise.reject(error);
-  }
-);
-
-
-aiApi.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    console.error("AI Service error:", error);
     return Promise.reject(error);
   }
 );
