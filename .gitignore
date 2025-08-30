@@ -13,8 +13,9 @@ __pycache__/
 .env
 *.env
 backend/.env
-frontend/.env
 ai-service/.env
+# Explicitly allow frontend .env
+!frontend/.env
 
 # Build files
 /dist
