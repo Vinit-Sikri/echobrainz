@@ -29,5 +29,4 @@ The project is designed for scalability and easy deployment on cloud platforms l
 
 ---
 
-## 📂 Project Structure
 
