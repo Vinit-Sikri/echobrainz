@@ -27,7 +27,7 @@ const Index = () => {
               Your Mood, <span className="text-primary">Understood.</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-lg mx-auto md:mx-0">
-              Log your daily mood, get smart, AI-driven recommendations, and discover your emotional trends with your personal wellness partner.
+              Log your daily mood, track your wellness, and discover your emotional trends with your personal wellness partner.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               {user ? (
@@ -105,7 +105,7 @@ const Index = () => {
               How EchoBrainzz Helps
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our platform uses AI to help you understand and improve your mental well-being through several key features.
+             Your companion for better mental well-being, with features to guide your growth and balance.
             </p>
           </div>
 
@@ -115,9 +115,9 @@ const Index = () => {
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                     <Smile className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Voice & Text Check-ins</h3>
+                <h3 className="text-xl font-bold mb-2">Text Check-ins</h3>
                 <p className="text-muted-foreground">
-                    Speak or write naturally, and our AI will analyze your emotional state.
+                     Write naturally to reflect on your thoughts and emotions.
                 </p>
             </div>
             <div className="bg-card p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border">
@@ -125,10 +125,10 @@ const Index = () => {
                     <Sparkles className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">
-                    AI Recommendations
+                    Personalized Suggestions
                 </h3>
                 <p className="text-muted-foreground">
-                    Receive curated music, videos, and activities matched to your current mood.
+                    Explore curated music, videos, and activities to match your current mood.
                 </p>
             </div>
             <div className="bg-card p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border">
@@ -155,7 +155,7 @@ const Index = () => {
               Begin Your Wellness Journey Today
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of users who are improving their well-being with EchoBrainzz. Your path to better mental health starts here.
+              Start your journey towards better well-being with EchoBrainzz. Your path to improved mental health begins here.
             </p>
             {user ? (
               <Button size="lg" asChild>

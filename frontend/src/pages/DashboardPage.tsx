@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { PlantGrowthTracker } from "@/components/PlantGrowthTracker";
-import { RecommendationCards } from "@/components/RecommendationCards";
+
 import { MoodChart } from "@/components/MoodChart";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 // 'Coins' icon hata diya gaya hai
-import { Mic, Calendar, ArrowRight } from "lucide-react"; 
+import { Calendar, ArrowRight } from "lucide-react"; 
 
 interface DashboardStats {
   streakCount: number;
@@ -17,7 +17,6 @@ interface DashboardStats {
   lastCheckIn: string | null;
   currentMood: string | null;
   completedJournals: number;
-  // tokenBalance yahan se hata diya gaya hai
 }
 
 const DashboardPage = () => {
@@ -27,7 +26,6 @@ const DashboardPage = () => {
     lastCheckIn: null,
     currentMood: null,
     completedJournals: 0,
-    // tokenBalance yahan se hata diya gaya hai
   });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -50,12 +48,6 @@ const DashboardPage = () => {
     }
   };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
 
   const needsCheckIn = () => {
     if (!stats.lastCheckIn) return true;
@@ -74,24 +66,16 @@ const DashboardPage = () => {
           <div className="bg-wellness-green/10 p-6 md:flex md:items-center md:justify-between">
             <div>
               <h2 className="text-2xl font-bold text-wellness-green-dark">
-                {getGreeting()}, {user?.name?.split(' ')[0] || 'Friend'}!
+                Hello, {user?.name?.split(' ')[0] || 'Friend'}!
               </h2>
-              <p className="mt-1 text-gray-600">
-                {needsCheckIn() 
-                  ? "How are you feeling today? Let's check in." 
-                  : `You're currently feeling ${stats.currentMood || 'balanced'}.`
-                }
-              </p>
             </div>
-            {needsCheckIn() && (
               <Button 
                 onClick={() => navigate('/check-in')}
                 className="mt-4 md:mt-0 bg-wellness-green hover:bg-wellness-green-dark text-white"
               >
-                <Mic className="mr-2 h-4 w-4" />
+               {/*  <Mic className="mr-2 h-4 w-4" /> */}
                 Daily Check-in
               </Button>
-            )}
           </div>
         </section>
 
@@ -102,7 +86,7 @@ const DashboardPage = () => {
           <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-wellness-blue/10 rounded-lg p-5 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-wellness-blue-dark">Check-in Streak</h3>
+                <h3 className="text-lg font-semibold text-wellness-blue-dark">Max Streak</h3>
                 <p className="text-3xl font-bold mt-2">{stats.streakCount} days</p>
               </div>
               <div className="mt-2 text-sm text-gray-600">
@@ -160,14 +144,6 @@ const DashboardPage = () => {
             </Button>
           </div>
           <MoodChart />
-        </section>
-
-        {/* Recommendations */}
-        <section className="ml-4 mr-4">
-          <div className=" ml-5 flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Personalized Recommendations</h2>
-          </div>
-          <RecommendationCards />
         </section>
       </div>
     </DashboardLayout>

@@ -1,3 +1,12 @@
+//“Ye system ek mini Redux-like pattern use karta hai — global in-memory state + listeners (pub-sub) + reducer. toast() ek action dispatch karta hai, state update hoti hai, aur listeners (React components) re-render hote hain. Dismiss aur remove separate hai: fade animation ke liye DISMISS_TOAST, aur timeout ke baad REMOVE_TOAST completely state se delete karta hai.”
+
+/*
+  Create toast → dispatch ADD_TOAST → reducer updates memoryState → listeners update UI
+  Update toast → dispatch UPDATE_TOAST → reducer updates matching toast → listeners update UI
+  Dismiss toast → dispatch DISMISS_TOAST → reducer marks open=false → listeners update UI → addToRemoveQueue
+  Remove toast → setTimeout fires → dispatch REMOVE_TOAST → reducer removes toast → listeners update UI
+
+*/
 import * as React from "react"
 
 import type {
@@ -20,7 +29,7 @@ const actionTypes = {
   UPDATE_TOAST: "UPDATE_TOAST",
   DISMISS_TOAST: "DISMISS_TOAST",
   REMOVE_TOAST: "REMOVE_TOAST",
-} as const
+} as const //string type ni lega literal lega
 
 let count = 0
 
@@ -31,7 +40,7 @@ function genId() {
 
 type ActionType = typeof actionTypes
 
-type Action =
+type Action = //union type //redux style actions , 4 me se koi 1 chlega 1 bar me
   | {
       type: ActionType["ADD_TOAST"]
       toast: ToasterToast
@@ -53,7 +62,7 @@ interface State {
   toasts: ToasterToast[]
 }
 
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>() //har toast k lie uska timeout store krna taki zrurt pdne p delete krske
 
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
@@ -75,7 +84,7 @@ export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
       return {
-        ...state,
+        ...state, //rest parameter of state
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
       }
 
@@ -106,7 +115,7 @@ export const reducer = (state: State, action: Action): State => {
           t.id === toastId || toastId === undefined
             ? {
                 ...t,
-                open: false,
+                open: false, //animation of fadeness
               }
             : t
         ),
@@ -126,9 +135,9 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
-const listeners: Array<(state: State) => void> = []
+const listeners: Array<(state: State) => void> = [] //like a pubsub model ki bs state btao merko m kuch return ni kruga array me dalduga setState type k functions store krta h
 
-let memoryState: State = { toasts: [] }
+let memoryState: State = { toasts: [] } //Global in-memory state (React ke bahar).
 
 function dispatch(action: Action) {
   memoryState = reducer(memoryState, action)
@@ -155,7 +164,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
-      onOpenChange: (open) => {
+      onOpenChange: (open) => { //agar user manually toast close kare
         if (!open) dismiss()
       },
     },

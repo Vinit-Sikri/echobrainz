@@ -98,7 +98,7 @@ const HistoryPage = () => {
                 
                 <Card className="bg-wellness-purple-light/10">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Weekly Averages</CardTitle>
+                    <CardTitle className="text-lg">Averages</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">

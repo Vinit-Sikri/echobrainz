@@ -142,7 +142,7 @@ const CheckInPage = () => {
                     min={1}
                     max={10}
                     step={1}
-                    onValue-change={(value) => setEnergyLevel(value[0])}
+                    onValueChange={(value) => setEnergyLevel(value[0])}
                   />
                 </div>
               </div>

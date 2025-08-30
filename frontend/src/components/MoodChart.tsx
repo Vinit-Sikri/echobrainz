@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,46 +23,71 @@ export function MoodChart() {
     fetchMoodData(timeRange);
   }, [timeRange]);
 
+  useEffect(() => {
+    console.log("Fetched moodData:", moodData);
+  }, [moodData]);
+
   const fetchMoodData = async (range: string) => {
     try {
       setLoading(true);
       const response = await api.get(`/mood/history?range=${range}`);
-      setMoodData(response.data);
+      
+      // map createdAt to date
+      const formatted = response.data.map((item: any) => ({
+        ...item,
+        date: item.createdAt,   // 👈 recharts expects this
+      }));
+      
+      setMoodData(formatted);
     } catch (error) {
       console.error('Error fetching mood data:', error);
-      // toast({
-      //   title: "Error",
-      //   description: "Could not load mood history data",
-      //   variant: "destructive",
-      // });
     } finally {
       setLoading(false);
     }
   };
 
-  // Custom tooltip for the chart
-  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload as MoodData;
-      return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-md">
-          <p className="font-semibold">{new Date(data.date).toLocaleDateString()}</p>
-          <p className="text-wellness-green">Mood: {data.mood}</p>
-          <p className="text-wellness-blue">Score: {data.moodScore}/10</p>
-          <p className="text-wellness-purple">Energy: {data.energyLevel}/10</p>
-        </div>
-      );
-    }
-    return null;
+  // ✅ Helper to format date as DD.MM.YY
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // month is 0-based
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}.${month}.${year}`;
   };
 
-  // Format date for x-axis labels
+const getMoodCategory = (score: number) => {
+  if (score <= 3) return "Low";
+  if (score <= 6) return "Neutral";
+  return "Positive";
+};
+
+  // Custom tooltip for the chart
+const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload as MoodData;
+    return (
+      <div className="bg-white p-3 border border-gray-200 rounded-md shadow-md">
+        <p className="font-semibold">{formatDate(data.date)}</p>
+        <p className="text-wellness-green">
+          Mood: {getMoodCategory(data.moodScore)}
+        </p>
+        <p className="text-wellness-blue">
+          Score: {data.moodScore}/10
+        </p>
+        <p className="text-wellness-purple">
+          Energy: {data.energyLevel}/10
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+  // ✅ Format X axis tick
   const formatXAxis = (tickItem: string) => {
-    const date = new Date(tickItem);
-    return date.toLocaleDateString(undefined, { 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    return formatDate(tickItem);
   };
 
   // Get gradient colors based on mood score
@@ -85,16 +109,6 @@ export function MoodChart() {
             <CardTitle>Mood History</CardTitle>
             <CardDescription>Tracking your emotional journey</CardDescription>
           </div>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Time Range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">Past Week</SelectItem>
-              <SelectItem value="month">Past Month</SelectItem>
-              <SelectItem value="3months">Past 3 Months</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </CardHeader>
       <CardContent>
