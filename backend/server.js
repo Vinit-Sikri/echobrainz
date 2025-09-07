@@ -29,6 +29,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.get('/health', (req, res) => res.status(200).send('OK')); // EB healthcheck
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
