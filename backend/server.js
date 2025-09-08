@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -12,8 +11,37 @@ dotenv.config();
 // Initialize express app
 const app = express();
 
+// --- START: MODIFIED CORS CONFIGURATION ---
+
+// 1. Create a list of all websites you want to allow
+const allowedOrigins = [
+  'https://main.djppq1baqy0dq.amplifyapp.com', // Your Amplify frontend
+  'https://echobrainzz.onrender.com',           // Your Render frontend
+  'http://localhost:3000',                     // For local testing (change port if needed, e.g., 5173 for Vite)
+  'http://localhost:5173'                      // Common port for Vite projects
+];
+
+// 2. Create the CORS options object
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl) and requests from our list
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('This origin is not allowed by CORS policy'));
+    }
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  optionsSuccessStatus: 200 // Important for preflight requests
+};
+
+// 3. Use the updated CORS options in your app. This replaces the old app.use(cors()).
+app.use(cors(corsOptions));
+
+// --- END: MODIFIED CORS CONFIGURATION ---
+
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
