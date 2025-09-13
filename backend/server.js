@@ -18,7 +18,7 @@ const allowedOrigins = [
   'https://main.djppq1baqy0dq.amplifyapp.com', // Your Amplify frontend
   'https://echobrainzz.onrender.com',           // Your Render frontend
   'http://localhost:3000',                     // For local testing (change port if needed, e.g., 5173 for Vite)
-  'http://localhost:5173'                      // Common port for Vite projects
+  'http://localhost:8080'                      // Common port for Vite projects
 ];
 
 // 2. Create the CORS options object
@@ -37,6 +37,9 @@ const corsOptions = {
 
 // 3. Use the updated CORS options in your app. This replaces the old app.use(cors()).
 app.use(cors(corsOptions));
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
+
 
 // --- END: MODIFIED CORS CONFIGURATION ---
 
@@ -71,6 +74,7 @@ app.use('/api/tokens', require('./routes/tokens'));
 app.use("/api/plants",require('./routes/plants'));
 const groupRoutes = require("./routes/group.js");
 app.use("/api", groupRoutes);
+app.use('/api/mood', require('./routes/geminiMood'));
 
 // Create uploads directory if it doesn't exist
 const fs = require('fs');

@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { PlantGrowthTracker } from "@/components/PlantGrowthTracker";
-
-import { MoodChart } from "@/components/MoodChart";
+import MoodChart  from "@/components/MoodChart";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-// 'Coins' icon hata diya gaya hai
-import { Calendar, ArrowRight } from "lucide-react"; 
+import { Calendar, ArrowRight, TrendingUp, Target, Sparkles, Clock } from "lucide-react";
 
 interface DashboardStats {
   streakCount: number;
@@ -48,7 +46,6 @@ const DashboardPage = () => {
     }
   };
 
-
   const needsCheckIn = () => {
     if (!stats.lastCheckIn) return true;
     
@@ -58,92 +55,157 @@ const DashboardPage = () => {
     return lastCheckInDate < todayDate;
   };
 
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  };
+
+  const getGreeting = () => {
+    const timeOfDay = getTimeOfDay();
+    const name = user?.name?.split(' ')[0] || 'Friend';
+    
+    switch(timeOfDay) {
+      case 'morning': return `Good morning, ${name}! ☀️`;
+      case 'afternoon': return `Good afternoon, ${name}! 🌤️`;
+      case 'evening': return `Good evening, ${name}! 🌙`;
+      default: return `Hello, ${name}! 👋`;
+    }
+  };
+
   return (
     <DashboardLayout pageTitle="Dashboard">
       <div className="space-y-8">
-        {/* Welcome Section */}
+        {/* Enhanced Welcome Section with Gradient */}
         <section>
-          <div className="bg-wellness-green/10 p-6 md:flex md:items-center md:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-wellness-green-dark">
-                Hello, {user?.name?.split(' ')[0] || 'Friend'}!
-              </h2>
-            </div>
-              <Button 
-                onClick={() => navigate('/check-in')}
-                className="mt-4 md:mt-0 bg-wellness-green hover:bg-wellness-green-dark text-white"
-              >
-               {/*  <Mic className="mr-2 h-4 w-4" /> */}
-                Daily Check-in
-              </Button>
-          </div>
-        </section>
-
-        {/* Plant Growth and Stats Summary */}
-        <section className="ml-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PlantGrowthTracker />
-          
-          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-wellness-blue/10 rounded-lg p-5 flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-wellness-blue-dark">Max Streak</h3>
-                <p className="text-3xl font-bold mt-2">{stats.streakCount} days</p>
-              </div>
-              <div className="mt-2 text-sm text-gray-600">
-                Keep the streak alive to grow your plant!
-              </div>
-            </div>
+          <div className="relative overflow-hidden bg-gradient-to-br from-wellness-green/20 via-wellness-blue/10 to-wellness-teal/15 p-8 rounded-2xl border border-wellness-green/20 shadow-sm">
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-wellness-yellow/20 to-transparent rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-wellness-blue/20 to-transparent rounded-full blur-xl"></div>
             
-            <div className="bg-wellness-purple/10 rounded-lg p-5 flex flex-col justify-between mr-4">
-              <div>
-                <h3 className="text-lg font-semibold text-wellness-purple-dark">Total Check-ins</h3>
-                <p className="text-3xl font-bold mt-2">{stats.totalCheckIns}</p>
-              </div>
-              <div className="mt-2 text-sm text-gray-600">
-                You're building a great wellness routine!
-              </div>
-            </div>
-            
-            {/* Token Balance Wala Card Yahan Se Hata Diya Gaya Hai */}
-            
-            <div className="bg-wellness-teal/10 rounded-lg p-5 flex flex-col justify-between mr-4">
-              <div>
-                <h3 className="text-lg font-semibold text-wellness-teal-dark">Next Summary</h3>
-                <p className="text-sm font-medium mt-2">
-                  {stats.totalCheckIns >= 3 
-                    ? "Ready to generate!" 
-                    : `Available after ${3 - stats.totalCheckIns} more check-ins`
-                  }
+            <div className="relative md:flex md:items-center md:justify-between">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-wellness-green-dark to-wellness-blue-dark bg-clip-text text-transparent">
+                  {getGreeting()}
+                </h2>
+                <p className="text-gray-600 font-medium">
+                  {needsCheckIn() ? "Ready for your daily wellness check-in?" : "You're all caught up for today!"}
                 </p>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => navigate('/history')}
-                className="mt-2 self-start"
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                View Summaries
-              </Button>
+              <div className="mt-6 md:mt-0 space-y-3 md:space-y-0 md:space-x-3 md:flex">
+                <Button 
+                  onClick={() => navigate('/check-in')}
+                  className="w-full md:w-auto bg-gradient-to-r from-wellness-green to-wellness-green-dark hover:from-wellness-green-dark hover:to-wellness-green text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                  size="lg"
+                >
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Daily Check-in
+                </Button>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Mood Chart */}
-        <section className="ml-4 mr-4">
-          <div className="ml-5 flex items-center justify-between mb-4">
-            <h2 className=" text-xl font-semibold text-gray-800">Mood Tracking</h2>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/history')}
-              className="text-wellness-blue flex items-center"
-            >
-              View Detailed History
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
+        {/* Enhanced Plant Growth and Stats Grid */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Plant Growth Card - Enhanced */}
+          <div className="lg:col-span-1">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100 shadow-sm hover:shadow-md transition-all duration-300">
+              <PlantGrowthTracker />
+            </div>
           </div>
-          <MoodChart />
+          
+          {/* Stats Grid - Modern Cards */}
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Streak Card */}
+            <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-wellness-blue/10 rounded-full blur-xl"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <TrendingUp className="h-8 w-8 text-wellness-blue-dark" />
+                  <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Streak</span>
+                </div>
+                <h3 className="text-lg font-semibold text-wellness-blue-dark mb-2">Max Streak</h3>
+                <p className="text-4xl font-bold text-wellness-blue-dark mb-2">{stats.streakCount}</p>
+                <p className="text-sm text-gray-600">
+                  {stats.streakCount > 0 ? "🔥 Keep it going!" : "Start your journey today!"}
+                </p>
+              </div>
+            </div>
+            
+            {/* Total Check-ins Card */}
+            <div className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-purple-200/20 rounded-full blur-xl"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <Target className="h-8 w-8 text-purple-600" />
+                  <span className="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded-full">Total</span>
+                </div>
+                <h3 className="text-lg font-semibold text-purple-700 mb-2">Check-ins</h3>
+                <p className="text-4xl font-bold text-purple-700 mb-2">{stats.totalCheckIns}</p>
+                <p className="text-sm text-gray-600">
+                  {stats.totalCheckIns > 5 ? "🎉 Amazing progress!" : "Building your routine"}
+                </p>
+              </div>
+            </div>
+            
+            {/* Summary Status Card */}
+            <div className="sm:col-span-2 group relative overflow-hidden bg-gradient-to-br from-teal-50 to-green-50 rounded-2xl p-6 border border-teal-100 shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-teal-200/20 rounded-full blur-2xl"></div>
+              <div className="relative flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="h-8 w-8 text-teal-600" />
+                    <span className="text-xs font-medium text-teal-600 bg-teal-100 px-3 py-1 rounded-full">
+                      {stats.totalCheckIns >= 3 ? "Ready!" : `${3 - stats.totalCheckIns} more needed`}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-teal-700 mb-2">Weekly Summary</h3>
+                  <p className="text-gray-600 text-sm mb-4">
+                    {stats.totalCheckIns >= 3 
+                      ? "🎊 Your personalized insights are ready to view!" 
+                      : `Complete ${3 - stats.totalCheckIns} more check-ins to unlock your wellness summary`
+                    }
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/history')}
+                  className="border-teal-200 text-teal-700 hover:bg-teal-50 hover:border-teal-300 transition-all duration-300 hover:scale-105"
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  View Summaries
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Enhanced Mood Chart Section */}
+        <section>
+          <div className="bg-gradient-to-r from-white to-gray-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-gray-100 bg-white/80 backdrop-blur">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-8 bg-gradient-to-b from-wellness-blue to-wellness-green rounded-full"></div>
+                  <h2 className="text-xl font-semibold text-gray-800">Mood Tracking</h2>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/history')}
+                  className="text-wellness-blue hover:bg-wellness-blue/10 hover:text-wellness-blue-dark transition-all duration-300 group"
+                >
+                  View Detailed History
+                  <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-6">
+              <MoodChart />
+            </div>
+          </div>
         </section>
       </div>
     </DashboardLayout>

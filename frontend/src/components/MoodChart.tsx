@@ -13,7 +13,7 @@ interface MoodData {
   energyLevel: number;
 }
 
-export function MoodChart() {
+export default function MoodChart() {
   const [moodData, setMoodData] = useState<MoodData[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState("week");
