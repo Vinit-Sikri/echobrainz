@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "zip": "bestzip ../backend.zip .",
     "dev": "nodemon server.js"
   },
   "dependencies": {
