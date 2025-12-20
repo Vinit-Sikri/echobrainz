@@ -5,9 +5,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function getSuggestions(userInput) {
   try {
-    const model = genAI.getGenerativeModel({
-  model: "gemini-pro",
+const model = genAI.getGenerativeModel({
+  model: "models/gemini-1.5-flash-latest",
 });
+
 
     const prompt = `
 User mood/input: "${userInput}"
