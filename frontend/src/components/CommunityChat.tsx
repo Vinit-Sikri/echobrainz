@@ -144,27 +144,46 @@ export function CommunityChat() {
     }
   };
 
-  const joinGroup = async (groupId: string) => {
-    try {
-      const response = await api.post(`/community/${groupId}/join`);
-      setGroups(prev => prev.map(g => g._id === groupId ? response.data : g));
-      toast({
-        title: "Joined Group",
-        description: "You have successfully joined the group",
-      });
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response.data) {
-        console.error("Backend rejected the request with:", error.response.data);
-      } else {
-        console.error('An unexpected error occurred:', error);
+const joinGroup = async (groupId: string) => {
+  try {
+    const response = await api.post(`/community/${groupId}/join`);
+    setGroups(prev =>
+      prev.map(g => (g._id === groupId ? response.data : g))
+    );
+    toast({
+      title: "Joined Group",
+      description: "You have successfully joined the group",
+    });
+  } catch (error: any) {
+    const msg = error?.response?.data?.message;
+
+    // ✅ Treat "Already a member" as success
+    if (msg === "Already a member of this group") {
+      try {
+        const res = await api.get(`/community/${groupId}`);
+        setGroups(prev =>
+          prev.map(g => (g._id === groupId ? res.data : g))
+        );
+        setMessages(res.data.messages || []);
+        toast({
+          title: "Already Joined",
+          description: "You are already a member of this group.",
+        });
+        return;
+      } catch (e) {
+        console.error("Failed to refetch group:", e);
       }
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Could not join the group",
-        variant: "destructive",
-      });
     }
-  };
+
+    console.error("Join group error:", error);
+    toast({
+      title: "Error",
+      description: msg || "Could not join the group",
+      variant: "destructive",
+    });
+  }
+};
+
   
   const leaveGroup = async (groupId: string) => {
     try {
