@@ -1,15 +1,12 @@
-require('dotenv').config();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
+const { GoogleGenAI } = require("@google/genai");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const client = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 async function getSuggestions(userInput) {
   try {
-const model = genAI.getGenerativeModel({
-  model: "models/gemini-1.5-flash-latest",
-});
-
-
     const prompt = `
 User mood/input: "${userInput}"
 
@@ -22,20 +19,21 @@ Also suggest:
 - one related article I might like to read.
 `;
 
-    const result = await model.generateContent({
+    const response = await client.models.generateContent({
+      model: "gemini-1.5-flash",
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
-    return result.response.text();
-  } catch (error) {
-    console.error("Gemini API failed:", error.message);
+    return response.text;
+  } catch (err) {
+    console.error("Gemini API failed:", err.message);
 
-    // 🛡️ Fallback so app never crashes
+    // Fallback so your app never breaks
     return `
 - Take a few slow deep breaths and give yourself a short break.
 - Write down what you're feeling to clear your mind.
-- 🎵 Music: Try listening to a calm lo-fi or acoustic playlist.
-- 📖 Article: Read a short article on simple mindfulness tips.
+- 🎵 Music: Try a calm lo-fi playlist.
+- 📖 Article: Read about simple mindfulness techniques.
 `;
   }
 }
